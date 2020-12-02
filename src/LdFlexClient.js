@@ -69,7 +69,7 @@ const defaultOutputFormat = "fmt_json_formatted"
 
 export function LdFlexClient(props) {
 
-  const { qsSource, qsQuery, qsContext, qsOutputFormat  } = getQueryStringParams(props.pageUrl);
+  const { qsSource, qsQuery, qsContext, qsOutputFormat } = getQueryStringParams(props.pageUrl);
 
   // pageUrl: The URL of the page displaying this React component.
   const pageUrl = new URL(props.pageUrl);
@@ -97,7 +97,7 @@ export function LdFlexClient(props) {
   // The selected subject property in the properties select control.
   // TO DO: Need to provide a UI to help the user to derive an ldfDataPath from a property URI. 
   const [ldfProperty, setLdfProperty] = useState(null);
- 
+
   // context: The JSON-LD context for resolving properties.
   const [context, setContext] = useState(qsContext ? qsContext : defaultContext);
 
@@ -178,14 +178,14 @@ export function LdFlexClient(props) {
       if (!ldfSubject || !ldfSubject.trim())
         throw new Error('No subject selected.');
     }
-    catch(ex) {
+    catch (ex) {
       setStatus('Invalid subject URI: ' + ex.message);
       return;
     }
 
     // Validate JSON-LD context
     try {
-      if (!context || !context.trim()) 
+      if (!context || !context.trim())
         throw new Error('Empty JSON-LD context');
       JSON.parse(context);
     }
@@ -199,13 +199,13 @@ export function LdFlexClient(props) {
       if (!ldfDataPath || !ldfDataPath.trim())
         throw new Error('Data path not set');
     }
-    catch(ex) {
+    catch (ex) {
       setStatus('Invalid LDflex data path: ' + ex.toString());
       return;
     }
 
     try {
-      if (ldfQryCtxStale) 
+      if (ldfQryCtxStale)
         refreshLdfQryCtx();
 
       let resolvedDataPath = gLdfQryCtx.subjectPath.resolve(ldfDataPath);
@@ -226,8 +226,7 @@ export function LdFlexClient(props) {
 
       let data = new Set();
       // setResponsePending(true); // Not required. Response from client-side query engine is very quick.
-      for await (const val of resolvedDataPath)
-      {
+      for await (const val of resolvedDataPath) {
         // val is not a simple value, it's a Proxy instance
         data.add(val.toString());
       }
@@ -248,14 +247,14 @@ export function LdFlexClient(props) {
     try {
       if (!source || !source.trim())
         throw new Error('Empty string');
-      let src = source.trim(); 
+      let src = source.trim();
       let parsedSourceUrl = new URL(src); // Will throw exception if not a valid URL
       if (!parsedSourceUrl || parsedSourceUrl.origin === 'null')
         throw new Error('URL parsing error');
       // TO DO:Catch source URI which doesn't resolve
       return src;
     }
-    catch(ex) {
+    catch (ex) {
       throw new Error('Invalid source URL: ' + ex.message);
     }
   }
@@ -267,20 +266,17 @@ export function LdFlexClient(props) {
     // The returned subjects include some which aren't immediate children of the source document.
     grSubjects = [];
 
-    // TO DO:
-    // - Display animated gif during resource fetch
-
     try {
       let src = validateSource();
 
-      if (ldfQryCtxStale) 
+      if (ldfQryCtxStale)
         refreshLdfQryCtxEngine();
 
       // We don't require a context for this PathFactory instance as
       // we're retrieving subjects, not executing an LDflex query.
       // context may not be set at this point.
       let pathFactory = new PathFactory({ queryEngine: gLdfQryCtx.queryEngine });
-      let srcPath = pathFactory.create({ subject: namedNode(src) });  
+      let srcPath = pathFactory.create({ subject: namedNode(src) });
       // Note: The subjects() method is only available on a path instance.
       // This is not mentioned in the LDflex README/documentation.
       setResponsePending(true);
@@ -295,7 +291,7 @@ export function LdFlexClient(props) {
       if (grSubjects.length)
         setLdfSubject(grSubjects[0]);
     }
-    catch(ex) {
+    catch (ex) {
       setStatus(ex.message);
       setLdfQryCtxStale(QC_STALE_SOURCE_CHANGED); // i.e. source is invalid
       setLdfSubject(null);
@@ -312,8 +308,6 @@ export function LdFlexClient(props) {
 
     grSubjectProperties = [];
 
-    // TO DO:
-    // - Display animated gif during resource fetch
     try {
       if (!ldfSubject || !ldfSubject.trim())
         throw new Error('Error: No subject selected.');
@@ -329,7 +323,7 @@ export function LdFlexClient(props) {
       let pathFactory = new PathFactory({ queryEngine: gLdfQryCtx.queryEngine });
       // Note: The properties() method is only available on a path instance.
       // This is not mentioned in the LDflex README/documentation.
-      let subjectPath = pathFactory.create({ subject: namedNode(ldfSubject) });  
+      let subjectPath = pathFactory.create({ subject: namedNode(ldfSubject) });
       setResponsePending(true);
       for await (const property of subjectPath.properties) {
         let propertyUri = property.toString();
@@ -340,7 +334,7 @@ export function LdFlexClient(props) {
       if (grSubjectProperties.length)
         setLdfProperty(grSubjectProperties[0]);
     }
-    catch(ex) {
+    catch (ex) {
       setStatus(ex.message);
       setLdfProperty(null);
     }
@@ -379,7 +373,7 @@ export function LdFlexClient(props) {
 
   const lstPropertyChangeHandler = event => {
     setLdfProperty(event.target.value);
-    clearQueryResultAndStatus(); 
+    clearQueryResultAndStatus();
     // ldfProperty is independent of ldfDataPath at the moment:
     // setLdfQryCtxStale(QC_STALE_xxx_CHANGED); 
   }
@@ -407,7 +401,7 @@ export function LdFlexClient(props) {
 
     // Strip off any query string provided initially,
     // i.e. any query permalink which was executed on page load
-    window.history.pushState({}, document.title, pageUrl.pathname); 
+    window.history.pushState({}, document.title, pageUrl.pathname);
   }
 
   const renderedQueryResult = (format) => {
@@ -483,7 +477,7 @@ export function LdFlexClient(props) {
     }
     return permalink.href;
   }
- 
+
   // If the page URL specifies a query then execute it on page load.
   // Note: useEffect(..., []) is equivalent to componentDidMount
   /*
@@ -507,32 +501,32 @@ export function LdFlexClient(props) {
   return (
     <>
       <Form>
-          <Form.Group>
-            <div style={{ display: "flex" }}>
-              <Form.Label>Data source URI:</Form.Label> 
-              <div style={{ flex: "1", textAlign: "right"}}>
-                <img src={loaderGif} className="loaderGif" style={{ visibility: ( responsePending ? "visible" : "hidden") }} />
-              </div>
+        <Form.Group>
+          <div style={{ display: "flex" }}>
+            <Form.Label>Data source URI:</Form.Label>
+            <div style={{ flex: "1", textAlign: "right" }}>
+              <img src={loaderGif} className="loaderGif" style={{ visibility: (responsePending ? "visible" : "hidden") }} />
             </div>
+          </div>
 
-            <Form.Control className="inputCntrl1" value={source} onChange={sourceChangeHandler} />
+          <Form.Control className="inputCntrl1" value={source} onChange={sourceChangeHandler} />
 
-            <div style={{ display: "flex", marginBottom: "5px" }}>
-              <Button onClick={() => getSourceSubjects()} style={{ fontSize: "90%", width: "20%" }}>Subjects</Button>
-              <span>&nbsp;</span>
-              <Form.Control as="select" value={ldfSubject} onChange={lstSubjectChangeHandler} style={{ fontSize: "90%" }}>
-                {grSubjects.map(subject => <option value={subject}>{subject}</option>)}
-              </Form.Control>
-            </div>
+          <div style={{ display: "flex", marginBottom: "5px" }}>
+            <Button onClick={() => getSourceSubjects()} style={{ fontSize: "90%", width: "20%" }}>Subjects</Button>
+            <span>&nbsp;</span>
+            <Form.Control as="select" value={ldfSubject} onChange={lstSubjectChangeHandler} style={{ fontSize: "90%" }}>
+              {grSubjects.map(subject => <option value={subject}>{subject}</option>)}
+            </Form.Control>
+          </div>
 
-            <div style={{ display: "flex" }}>
-              <Button onClick={() => getSubjectProperties()} style={{ fontSize: "90%", width: "20%" }}>Subject Properties</Button>
-              <span>&nbsp;</span>
-              <Form.Control as="select" value={ldfProperty} onChange={lstPropertyChangeHandler} style={{ fontSize: "90%" }}>
-                {grSubjectProperties.map(property => <option value={property}>{property}</option>)}
-              </Form.Control>
-            </div>
-          </Form.Group>
+          <div style={{ display: "flex" }}>
+            <Button onClick={() => getSubjectProperties()} style={{ fontSize: "90%", width: "20%" }}>Subject Properties</Button>
+            <span>&nbsp;</span>
+            <Form.Control as="select" value={ldfProperty} onChange={lstPropertyChangeHandler} style={{ fontSize: "90%" }}>
+              {grSubjectProperties.map(property => <option value={property}>{property}</option>)}
+            </Form.Control>
+          </div>
+        </Form.Group>
 
         <div style={{ display: "flex" }}>
 
