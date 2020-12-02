@@ -9,6 +9,12 @@ const { PathFactory } = require('ldflex');
 const { namedNode } = require('@rdfjs/data-model');
 const { default: ComunicaEngine } = require('@ldflex/comunica');
 
+
+// defaultSource is used together with the other defaults to ensure
+// the default LDflex query will execute and return results.
+
+const defaultSource = 'https://ruben.verborgh.org/profile/';
+const defaultLdfSubject = 'https://ruben.verborgh.org/profile/#me';
 const defaultContext = `
 {
   "@context": {
@@ -33,12 +39,11 @@ const QC_STALE_SUBJECT_CHANGED = 1;
 const QC_VALID = 0;
 
 // Subject URIs of the data source URI
-let grSubjects = [];
+// let grSubjects = [];
+let grSubjects = [defaultLdfSubject];
 
 // Property URIs of the current subject URI
 let grSubjectProperties = [];
-
-const defaultSource = 'https://ruben.verborgh.org/profile/';
 
 // dataPathPresets and its accompanying select control are a stopgap until 
 // data paths can be built interactively in the UI. 
@@ -91,7 +96,9 @@ export function LdFlexClient(props) {
   // ldfSubject:
   // The selected subject in the subjects select control.
   // The selected subject sets the current subject URI / LDflex path entry point.
-  const [ldfSubject, setLdfSubject] = useState(null);
+
+  // const [ldfSubject, setLdfSubject] = useState(null);
+  const [ldfSubject, setLdfSubject] = useState(defaultLdfSubject);
 
   // ldfProperty:
   // The selected subject property in the properties select control.
@@ -398,6 +405,10 @@ export function LdFlexClient(props) {
     setLdfDataPath(defaultLdfDataPath);
     setOutputFormat(defaultOutputFormat);
     setLdfQryCtxStale(QC_STALE_SOURCE_CHANGED);
+
+    grSubjects = [defaultLdfSubject];
+    setLdfSubject(defaultLdfSubject);
+    grSubjectProperties = [];
 
     // Strip off any query string provided initially,
     // i.e. any query permalink which was executed on page load
