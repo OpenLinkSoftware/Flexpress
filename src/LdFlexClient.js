@@ -3,6 +3,7 @@ import { Button, Form, Row, Col } from 'react-bootstrap';
 import JSONTree from 'react-json-tree';
 // ReactJson (npm react-json-view) provides a possible alternative control to JSONTree
 
+import loaderGif from './loader-white.gif';
 
 const { PathFactory } = require('ldflex');
 const { namedNode } = require('@rdfjs/data-model');
@@ -111,6 +112,8 @@ export function LdFlexClient(props) {
   const [status, setStatus] = useState(null);
   const [outputFormat, setOutputFormat] = useState(qsOutputFormat ? qsOutputFormat : defaultOutputFormat);
   const [queryPermalink, setQueryPermalink] = useState(props.pageUrl);
+
+  const [responsePending, setResponsePending] = useState(false);
 
   const refreshLdfQryCtxEngine = () => {
     // Precondition:
@@ -222,6 +225,7 @@ export function LdFlexClient(props) {
       // LDflex needs the facility to return a single value as an async iterable.
 
       let data = new Set();
+      // setResponsePending(true); // Not required. Response from client-side query engine is very quick.
       for await (const val of resolvedDataPath)
       {
         // val is not a simple value, it's a Proxy instance
@@ -234,6 +238,9 @@ export function LdFlexClient(props) {
     catch (ex) {
       setStatus('Query execution failed: ' + ex.toString());
       return;
+    }
+    finally {
+      setResponsePending(false);
     }
   }
 
@@ -276,6 +283,7 @@ export function LdFlexClient(props) {
       let srcPath = pathFactory.create({ subject: namedNode(src) });  
       // Note: The subjects() method is only available on a path instance.
       // This is not mentioned in the LDflex README/documentation.
+      setResponsePending(true);
       for await (const subject of srcPath.subjects) {
         let subjectUri = subject.toString();
         // Filter out blank nodes
@@ -291,6 +299,9 @@ export function LdFlexClient(props) {
       setStatus(ex.message);
       setLdfQryCtxStale(QC_STALE_SOURCE_CHANGED); // i.e. source is invalid
       setLdfSubject(null);
+    }
+    finally {
+      setResponsePending(false);
     }
   }
 
@@ -319,6 +330,7 @@ export function LdFlexClient(props) {
       // Note: The properties() method is only available on a path instance.
       // This is not mentioned in the LDflex README/documentation.
       let subjectPath = pathFactory.create({ subject: namedNode(ldfSubject) });  
+      setResponsePending(true);
       for await (const property of subjectPath.properties) {
         let propertyUri = property.toString();
         grSubjectProperties.push(propertyUri);
@@ -331,6 +343,9 @@ export function LdFlexClient(props) {
     catch(ex) {
       setStatus(ex.message);
       setLdfProperty(null);
+    }
+    finally {
+      setResponsePending(false);
     }
   }
 
@@ -493,7 +508,13 @@ export function LdFlexClient(props) {
     <>
       <Form>
           <Form.Group>
-            <Form.Label>Data source URI:</Form.Label>
+            <div style={{ display: "flex" }}>
+              <Form.Label>Data source URI:</Form.Label> 
+              <div style={{ flex: "1", textAlign: "right"}}>
+                <img src={loaderGif} className="loaderGif" style={{ visibility: ( responsePending ? "visible" : "hidden") }} />
+              </div>
+            </div>
+
             <Form.Control className="inputCntrl1" value={source} onChange={sourceChangeHandler} />
 
             <div style={{ display: "flex", marginBottom: "5px" }}>
