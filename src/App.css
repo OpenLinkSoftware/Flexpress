@@ -1,38 +1,76 @@
-.App {
+
+:root {
+  --backgroundColor: #002b36;
+  --navbarTextColor: #677a97;
+  --inputCtlTextColor: #657b83;
+  --borderColor: gray;
+  --labelColor: white;
+  --errorTextColor: red;
+}
+
+.navbar {
+  background-color: var(--backgroundColor);
+}
+
+.navbarBrand {
+  color: var(--navbarTextColor) !important;
+}
+
+.appContainer {
   text-align: center;
+  color: var(--inputCtlTextColor) !important;
+  background-color: var(--backgroundColor);
+  margin-top: 30px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  border-radius: 10px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.inputCntrl1 {
+  color: var(--inputCtlTextColor) !important;
+  background-color: var(--backgroundColor) !important;
+  border-color: var(--borderColor) !important;
+  clear: both;
+  margin-bottom: 10px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.inputTextArea {
+  resize: none; 
+  height: 200px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.errorTxtContainer {
+  height: 10px;
 }
 
-.App-link {
-  color: #61dafb;
+.errorTxt {
+  color: var(--errorTextColor);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.qryRsltContainer {
+  border: 1px solid var(--borderColor);
+  border-radius: 3px;
+  min-height: 120px;
+  clear: both;
+  text-align: left;
+  padding-left: 10px; 
+  overflow-X: auto;
+}
+
+.qryRsltJsonText {
+  color: var(--inputCtlTextColor);
+}
+
+.btn:focus,.btn:active {
+  box-shadow: none !important ;
+}
+
+.form-label {
+  float: left !important;
+  text-align: left !important;
+  color: var(--labelColor);
+}
+
+.form-control:focus {
+  box-shadow: none !important;
 }

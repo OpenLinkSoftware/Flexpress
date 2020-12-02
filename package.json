@@ -1,13 +1,20 @@
 {
   "name": "flexpress",
   "version": "0.1.0",
+  "homepage": ".",
   "private": true,
   "dependencies": {
+    "@ldflex/comunica": "3.4.2",
+    "@solid/query-ldflex": "2.11.3",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "bootstrap": "4.5.3",
+    "ldflex": "2.11.1",
     "react": "^17.0.1",
+    "react-bootstrap": "1.4.0",
     "react-dom": "^17.0.1",
+    "react-json-tree": "0.13.0",
     "react-scripts": "4.0.1",
     "web-vitals": "^0.2.4"
   },
